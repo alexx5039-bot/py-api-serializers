@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Actor, Genre, Movie, MovieSession, CinemaHall
+from typing import List
 
 
 class ActorSerializer(serializers.ModelSerializer):
@@ -9,7 +10,7 @@ class ActorSerializer(serializers.ModelSerializer):
         model = Actor
         fields = ("id", "first_name", "last_name", "full_name")
 
-    def get_full_name(self, obj):
+    def get_full_name(self, obj) -> str:
         return f"{obj.first_name} {obj.last_name}"
 
 
@@ -30,7 +31,7 @@ class MovieListSerializer(serializers.ModelSerializer):
         model = Movie
         fields = ("id", "title", "description", "duration", "genres", "actors")
 
-    def get_actors(self, obj):
+    def get_actors(self, obj: Movie) -> List[str]:
         return [f"{a.first_name} {a.last_name}" for a in obj.actors.all()]
 
 
@@ -66,12 +67,12 @@ class MovieCreateUpdateSerializer(serializers.ModelSerializer):
         model = Movie
         fields = ("id", "title", "description", "duration", "genres", "actors")
 
-    def validate_duration(self, value):
+    def validate_duration(self, value: int) -> int:
         if value <= 0:
             raise serializers.ValidationError("Duration must be positive.")
         return value
 
-    def validate_title(self, value):
+    def validate_title(self, value: str) -> str:
         if not value:
             raise serializers.ValidationError("Title cannot be empty.")
         return value
@@ -124,7 +125,7 @@ class MovieNestedSerializer(serializers.ModelSerializer):
             "actors",
         )
 
-    def get_actors(self, obj):
+    def get_actors(self, obj: Movie) -> List[str]:
         return [f"{a.first_name} {a.last_name}" for a in obj.actors.all()]
 
 
